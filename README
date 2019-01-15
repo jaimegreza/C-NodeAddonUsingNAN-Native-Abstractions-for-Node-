@@ -1,0 +1,177 @@
+Jaime Reza 
+“Secret Keeper” submission LinkedIn REACH Apprenticeship program. 
+Submitted on 8/31/2018
+
+Overview
+The challenge was to create an application that “keeps” the “secret” from going over the wire when a user is guessing the “secret”. The secret word is to be kept by the Secret Keeper which in my case is C++ Gaming Service which hosts games for a “Pokemon Go” hangman game. “This Secret Keeper” creates and manages the Game State in memory but does not persist games to disk. An extension could be to provide a persistence layer to a database so that all finished games are not lost when the process is ended. This is the only process that consumes the provided LinkedIn REST API for words at “ http://app.linkedin-reach.io/words”.
+The C++ Gaming Service caches 10 secrets per difficulty level so not to overwhelm the LinkedIn API. 
+
+A REST API was created for ‘games’ so that clients (web, mobile, desktop) can consume it to create Secrets for their applications. This web service is build on Express and Node.js which is all server side javascript for exposing routes for /game, /game/gameId.
+
+In order to hook up my C++ Gaming Service to the server side javascript I created a Node.Js addon using NAN (Native Abstractions for Node.Js). This allows me to expose the C++ service as a library through a small addon which provides a javascript object named “secretKeeper”. This allows the REST API server side javascript to access the C++ Gaming Service as a json object. This REST API is available at http//localhost:8080/ or http:{your machines IPaddr}:8080/.  A desktop/laptop web browser is best since it is not optimized for mobile but you can go landscape and resize to fit screen.
+
+The C++ process is written in a way that can be turned very scalable since many Node.js process can communicate with the Gaming Service through a “Secret Keeper” intermediary interface. The “Secret Keeper” interface sends “game_message” C++ structure back and forth to the singleton GameManager which manages the creation and hosting of games. As a future extension super scalability can be achieved by separating the “Secret Keeper”  and “Game Manager” into network socket applications and the serialization of the “game_message” C++ struct can be done via any rpc mechanism. The Node.Js server size REST API will not have to be changed because it talks to the “Secret Keeper” library interface. It will be unaware if the Secret Keeper and Game Manager are in the same process or not.
+
+For my application for “Pokemon Go” hangman I created a React.Js Web application which provides a solution for the hangman guessing the secret word game. I worked on this last but I focused more on the UX (User Experience) on this application to make it intuitive as possible. Hopefully it will be fun to use but having played the game the secrets are very difficult to solve. It is still very fun to play. Enjoy! You can use any web browser including mobile. http//localhost:3000/ or http:{your machines IPaddr}:3000/.  
+
+Ps -- I will bring my own laptop to the interview on Friday the 7th, 2018
+Regards
+Jaime Reza
+
+Requirements:
+
+The following are built on a Macintosh Macbook Pro (2009) (it still runs strong).
+(I will be bringing this Macbook Pro for my onsite interview)
+(you need to install XCode even though it is not required for building.
+It is used for building C++ and installed libCurl )
+
+NodeJs installed with version greater than 6.0.0
+(I use v10.9.0 )
+If you dont have node you can use brew on a mac
+
+Install brew if you don’t have it. 
+First install ruby if you don’t have it on your mac.
+$ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+Install node
+$brew install node
+
+libCurl (7.19.6_0)
+(/opt/local/var/macports/software/curl/7.19.6_0/opt/local/include)
+(you can modify the binding.gyp to point to what is installed on your machine - full path)
+
+Deliverables and Building
+
+(unzip deliverable to a folder on your machine)
+
+Packaging is done via NPM (Node Package Manager) and compiling via Node GYP.
+NPM (package.json) (used to install the Node modules)
+GYP (binding.gyp) (used to compile the C++ classes)
+
+There are 2 package.json files in the extracted files.
+package.json   (top level)
+client/pokey-client/package.json
+
+The top level package.json installs following Node.j modules
+Body-parser
+Express
+Nan
+
+
+
+
+In a terminal , cd to the top level directory of the unzipped folder.
+run
+$npm install
+
+This will install all the Node.js modules in the node_modules directory.
+It also compiles the C++ files using the binding.gyp file which creates the Node.Js addon
+That addon is created in ‘build/release/secret_keeper_lib.node’
+
+Start up the REST api server for port 8080
+(run server before client)
+
+$node server.js
+
+
+In a terminal , cd to client\pokey-client\
+run
+$npm install
+
+This will install all the React node.js modules
+
+To Start it up make sure you run:
+
+$npm run start
+
+(this will automatically bring up a chrome browser and launch the React web application at port 3030)
+
+
+Source Files
+
+We have 4 main sections for this software stack.
+
+C++ Game Hosting Service
+C++ Node.js addon for exposing the Secret Keeper as a library.
+The Server side javascript for the games REST API
+The Client side javascript and resources for the Web Client.
+
+
+-------- Game Hosting Service
+Game.h	/* Game class represents an instance of a Game that handles Secret */
+Game.cpp 
+GameManager.h /* GameManager Singleton instance calls LinkedIn REST API and creates Game objects and keeps track of them. It services calls from my game API for getting Game Objects state */
+
+GameManager.cpp
+
+SecretKeeper.h    /* The interface for exposing the service as  a library */
+SecretKeeper.cpp  
+
+Game_message.h  /* the C++ struct game_message_w for communication between the Secret Keeper interface and GameManager service */
+
+
+Main.cpp (this would only run for tests but i used Visual Studio Code for coding)
+(there is a .vsproject folder that contains settings for running and debugging)
+The game_message_w C++ struct
+struct game_message_w
+{
+   int gameId;  // gameId -1 for unavailable/exhausted game
+   int difficultyLevel;
+   bool bGameFinished; // is game not in progress?
+   bool bWon;     // is the game over and won?
+
+   int numGuessRemaining;  // num guesses remaining
+   int secretLength; // length of secret word
+   char lastGuess;   // last guessed character
+   bool bLastGuessMatched; // did last character guess match any letter in secret
+
+   list<int> positions;  // positions in secret of letters that matched guess
+
+   list<char> lettersGuessed; // all chars of letters that were guessed for the game
+  
+   game_message_w() : gameId(-1),
+   bGameFinished(false),
+   bWon(false),
+   bLastGuessMatched(false){}
+};
+
+
+------C++ Node.js addon for exposing the Secret Keeper as a library.
+Secret_keeper_addon.h /* uses Nan to cross C++ javascript Bridge */
+Secret_keeper_addon.cpp 
+(this was a fun part of the project as it involves V8 Chrome javascript engine)
+(The Addon does all the serialization work of the game_message_w C++ struct to the game_message JSON object)
+
+Server.js    // the Express REST api file which has routes for /games /games/gameId
+(this can be run with 
+$node server.js
+Or
+It runs when building npm install on the top level 
+Run this before running the client :) I run it manually
+The JSON REST API returns the current state of a Game object
+(it has similar fields to the C++ struct so if understand the C++ struct you see this is basically just that struct transfered via JSON - serialized via the Node JS addon - kewl no?)
+
+{
+	"gameId": 1,
+	"bGameFinished": false,
+	"bWon": true,
+	"difficultyLevel": 3,
+	"numGuessRemaining": 3,
+	"secretLength": 5,
+	"lastGuess": "a",
+	"bLastGuessMatched": false,
+	"positions": [1, 2, 4],
+	"lettersGuessed": ["a", "b", "c"]
+}
+
+
+----The Client side javascript and resources for the Web Client.
+/client/pokey-client/src 
+(React JS files)
+App.js // represents the first scene of picking a difficulty level through Pokemon! 
+App.css
+UI.js  // contains helper function for displaying messages
+
+Components directory
+Game.js  // scene of guessing the secret, fetches REST api calls for /games /games/gameId
+Game.css

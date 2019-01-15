@@ -1,0 +1,27 @@
+{
+  "name": "secret_keeper",
+  "version": "1.0.0",
+  "description": "Secret Keeper addon for node",
+  "main": "./server.js",
+  "gypfile": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "build:dev": "node-gyp -j 16 build --debug",
+    "build": "node-gyp -j 16 build",
+    "rebuild:dev": "node-gyp -j 16 rebuild --debug",
+    "rebuild": "node-gyp -j 16 rebuild",
+    "clean": "node-gyp clean"
+  },
+  "author": "Jaime Reza",
+  "engines": {
+    "node": ">= 6.0.0"
+  },
+  "license": "ISC",
+  "devDependencies": {},
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "nan": "^2.11.0"
+  }
+}
