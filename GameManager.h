@@ -5,6 +5,7 @@
 
 
 #include <iostream>
+#include <vector>
 #include <string>
 #include <list>
 #include <unordered_map>
@@ -39,6 +40,8 @@ private:
  *  If i used vector would have to use extra int ptr to see last index removed or available
  *  and maintain the ptr. Using list size to track when it gets to 0 size.
  ***/
+
+    unordered_map<int, vector<string>> m_level_cache; // todo: update caches using map
 
     list<string> m_level1_cache;   
     list<string> m_level2_cache;   

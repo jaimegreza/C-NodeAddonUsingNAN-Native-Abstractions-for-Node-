@@ -7,7 +7,8 @@
 #include <curl/curl.h>
 #include <string>
 #include "./GameManager.h"
-
+#include <cstdlib>
+#include <ctime>
 using namespace std;
 
 /** CLASS VARIABLES **/
@@ -138,8 +139,8 @@ vector<string> callReachAPI(int difficulty, int start)
 
     auto curl = curl_easy_init();
     string URL =  "http://app.linkedin-reach.io/words?";
-    string queryString = "count=" ;
-    queryString.append(to_string(API_COUNT));
+    string queryString = "";//= "count=" ;
+   // queryString.append(to_string(API_COUNT));
 
     queryString.append("&minLength=" + to_string(MIN_LENGTH));
     queryString.append("&maxLength=" + to_string(MAX_LENGTH));
@@ -223,8 +224,20 @@ void GameManager::initialize()
 
     /** set up initial cache for each difficulty level **/
 
+    // init rand seed
+    srand( time( NULL ) );
+    
+    vector<string> result;
+
+    for (int i = 1 ; i <= 10 ; i++)
+    {
+        result = callReachAPI(i,0);
+        m_level_cache[i] = result;
+    }
+    return;
+
     /* level 1 */
-    vector<string> result = callReachAPI(1,m_level1_start);
+    result = callReachAPI(1,m_level1_start);
     m_level1_start += result.size();
 
     if (result.size() < API_COUNT)
@@ -351,7 +364,26 @@ void GameManager::initialize()
 bool GameManager::getWordForDifficltyLevel(int difficultyLevel, string &secret)
 {
     // get a secret from our cache
+
+    // new code: using random access and map, quickly return for now.
  
+    vector<string> result = m_level_cache[difficultyLevel];
+
+    int len = result.size();
+
+
+    int secretIndex = rand() % len;
+    cout << "Manager - get Word - random index: " << secretIndex << endl;
+    secret = result[secretIndex];
+
+    // new code: using random access and map, quickly return for now.
+    /// refill logic to do later with new map
+    return true;
+
+    //m_used_secrets 
+
+
+
     switch (difficultyLevel)
     {
             case 1:

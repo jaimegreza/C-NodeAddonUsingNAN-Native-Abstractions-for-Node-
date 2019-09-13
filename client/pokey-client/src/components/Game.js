@@ -332,7 +332,7 @@ class Game extends Component {
                         <button class="ui-keyboard-button ui-corner-all" value="n" name="key_N" title=""><span>N</span></button>
                     </td>
                     <td>
-                        <button class="ui-keyboard-button ui-corner-all" value="M" name="key_M" title=""><span>M</span></button>
+                        <button class="ui-keyboard-button ui-corner-all" value="m" name="key_M" title=""><span>M</span></button>
                     </td>
                 </tr>
             </table>
