@@ -131,6 +131,7 @@ vector<string> processReachAPI(const string &data)
             break;
 
     }
+    result.push_back("pokemon");
     return result;
 }
 

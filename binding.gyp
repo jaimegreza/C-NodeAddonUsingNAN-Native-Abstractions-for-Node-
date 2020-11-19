@@ -13,7 +13,7 @@
             "<!@(node -p \"require('nan').include\")",
             "/opt/local/var/macports/software/curl/7.19.6_0/opt/local/include"
         ],
-        'libraries': ["-lcurl", "-L/opt/local/var/macports/software/curl/7.19.6_0/opt/local/lib"]
+        'libraries': ["-lcurl", "-L/usr/lib/x86_64-linux-gnu/libcurl.so.4"]
     }
     ]
 }

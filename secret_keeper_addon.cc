@@ -190,7 +190,7 @@ NAN_METHOD(CreateGame) {
         return;
     }
     
-    Nan::Utf8String difficultyLevel(info[0]->ToString());
+    Nan::Utf8String difficultyLevel(info[0]->ToString(Nan::GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
 
     if (!(isValidDifficultyLevel(*difficultyLevel))) {
         Nan::ThrowError("Difficulty Level must be between 1 and 10");
@@ -231,7 +231,7 @@ NAN_METHOD(GetGameCurrentInfo) {
         return;
     }
     
-    Nan::Utf8String gameId(info[0]->ToString());
+    Nan::Utf8String gameId(info[0]->ToString(Nan::GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
 
     if (!(isValidGameId(*gameId))) {
         Nan::ThrowError("please enter valid Game Id");
@@ -271,8 +271,8 @@ NAN_METHOD(GuessGame) {
         return;
     }
     
-    Nan::Utf8String gameId(info[0]->ToString());
-    Nan::Utf8String guess(info[1]->ToString());
+    Nan::Utf8String gameId(info[0]->ToString(Nan::GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
+    Nan::Utf8String guess(info[1]->ToString(Nan::GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
 
     if (!(isValidGameId(*gameId))) {
         Nan::ThrowError("please enter valid Game Id");
